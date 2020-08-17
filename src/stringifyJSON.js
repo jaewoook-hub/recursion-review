@@ -7,8 +7,6 @@ var stringifyJSON = function (obj) {
   // your code goes here
   if (obj === null) {
     return 'null';
-  } else if (obj === {}) {
-    return '{}';
   } else if (typeof (obj) === 'number' || typeof (obj) === 'boolean') {
     return `${obj}`;
   } else if (typeof (obj) === 'string') {
@@ -17,12 +15,32 @@ var stringifyJSON = function (obj) {
     if (obj.length === 0) {
       return '[]';
     } else {
-      obj.forEach(function (item) { stringifyJSON(item); });
+      var stringifiedArr = [];
+      for (var i = 0; i < obj.length; i++) {
+        stringifiedArr.push(stringifyJSON(obj[i]));
+      }
+      return '[' + stringifiedArr + ']';
+    }
+  } else if (typeof (obj) === 'object') {
+    if (Object.keys(obj).length === 0) {
+      return '{}';
+    } else {
+      var stringifiedObj = {};
+      for (var property in obj) {
+        var newKey = property;
+        var newVal = obj[property];
+
+        if (typeof (newKey) === 'string') {
+          stringifiedObj[newKey] = '"' + newVal + '"';
+        } else {
+          stringifiedObj[stringifyJSON(newKey)] = stringifyJSON(newVal);
+        }
+      }
+
+      return stringifiedObj;
     }
   }
 };
-
-
 
 
 /*
@@ -33,14 +51,14 @@ var stringifyJSON = function (obj) {
   // false,
   // 'Hello world',
   // [], "[]"  '"[]"'
-  [8],
-  ['hi'],   expected '[hi]' to equal '["hi"]'
-  [8, 'hi'],
-  [1, 0, -1, -0.3, 0.3, 1343.32, 3345, 0.00011999999999999999],
-  [8, [[], 3, 4]],
-  [[[['foo']]]],
-  {},
-  {'a': 'apple'},
+  // [8],=> '8
+  // ['hi'],   expected '[hi]' to equal '["hi"]'
+  // [8, 'hi'],
+  // [1, 0, -1, -0.3, 0.3, 1343.32, 3345, 0.00011999999999999999],
+  // [8, [[], 3, 4]],
+  // [[[['foo']]]],
+  // {},
+  {'a': 'apple'},  expected { '"a"': '"apple"' } to equal '{"a":"apple"}'
   {'foo': true, 'bar': false, 'baz': null},
   {'boolean, true': true, 'boolean, false': false, 'null': null },
   // basic nesting
@@ -49,11 +67,4 @@ var stringifyJSON = function (obj) {
   [{'a': 'b'}, {'c': 'd'}],
   {'a': [], 'c': {}, 'b': true}
 
-undefined
-empty obj
-strings "test" => ""test""
-integer 15 => "15"
-
-Array [1, 'test', [50]] => "[1,"test",[50]]"
-Object
 */
