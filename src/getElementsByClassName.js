@@ -4,21 +4,48 @@
 // };
 
 // But instead we're going to implement it from scratch:
-var getElementsByClassName = function (className, current = document.body
-) {
+
+var getElementsByClassName = function (className) {
   var container = [];
+  //if element has class, add to container
+  var checkClasses = function (current) {
+    if (current.classList.contains(className)) {
+      container.push(current);
+    }
 
-  //if thing has element w/ class, add to container
-  if (current.className === className) {
-    container.push(current);
-  }
+    //check for children and class, if child has class, add to container
+    for (var i = 0; i < current.children.length; i++) {
+      var child = current.children[i];
+      checkClasses(child);
+    }
+  };
 
-  //if thing doesn't have element w/ class, check for children
-  for (var i = 0; i < current.children.length; i++) {
-    var child = current.children[i];
-    getElementsByClassName(className, child);
-  }
-
-  console.log(container);
+  checkClasses(document.body);
   return container;
 };
+
+
+/*
+
+true
+  [div#mocha, div.targetClassName, mocha: div#mocha]      #text
+true
+
+You should use document.body, element.childNodes, and element.classList
+
+actual:
+[body.targetClassName]
+
+expected:
+[body.targetClassName, div.targetClassName]
+
+
+body
+div /div
+div /div
+/body
+
+body - 2 children
+div1
+div2
+*/
