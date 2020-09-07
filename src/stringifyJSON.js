@@ -3,43 +3,40 @@
 
 // but you don't so you're going to write it from scratch:
 
-var stringifyJSON = function (obj) {
+var stringifyJSON = function(obj) {
   // your code goes here
-  if (obj === null) {
-    return 'null';
-  } else if (typeof (obj) === 'number' || typeof (obj) === 'boolean') {
-    return `${obj}`;
-  } else if (typeof (obj) === 'string') {
-    return '"' + `${obj}` + '"';
-  } else if (Array.isArray(obj)) {
-    if (obj.length === 0) {
-      return '[]';
-    } else {
-      var stringifiedArr = [];
-      for (var i = 0; i < obj.length; i++) {
-        stringifiedArr.push(stringifyJSON(obj[i]));
-      }
-      return '[' + stringifiedArr + ']';
-    }
-  } else if (typeof (obj) === 'object') {
-    if (Object.keys(obj).length === 0) {
-      return '{}';
-    } else {
-      var stringifiedObj = {};
-      for (var property in obj) {
-        var newKey = property;
-        var newVal = obj[property];
 
-        if (typeof (newKey) === 'string') {
-          stringifiedObj[newKey] = '"' + newVal + '"';
-        } else {
-          stringifiedObj[stringifyJSON(newKey)] = stringifyJSON(newVal);
-        }
-      }
-
-      return stringifiedObj;
-    }
+  if(typeof(obj) === 'null'){ // input defined?
+    return '"' + obj + '"';
   }
+  else if(typeof(obj) === 'number'){ // input = number?
+    return obj.toString();
+  }
+  else if(typeof(obj) === 'boolean'){ //input = boolean?
+    return obj.toString();
+  }
+  else if(typeof(obj) === 'string'){ // input = string?
+    return '"' + obj + '"';
+  }
+  else if(Array.isArray(obj)){ // input = array?
+    obj = obj.map(function(element){
+      return stringifyJSON(element);
+    });
+    return '[' + obj + ']';
+  }
+  else if(obj && typeof(obj) === 'object'){ //input = object?
+    var output = [];
+    for(var x in obj){
+      if(typeof(obj[x]) === 'function' || typeof(obj[x]) === 'undefined'){
+        // Breaks on iteration to skip over any function or undefined
+        continue;
+      }
+      output.push(stringifyJSON(x) + ':' + stringifyJSON(obj[x])); // Push key + value
+    }
+    return '{' + output.join() + '}';
+  }
+
+  return String(obj);
 };
 
 
